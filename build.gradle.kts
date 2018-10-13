@@ -11,7 +11,7 @@ plugins {
 }
 
 application {
-    mainClassName = "io.fobo66.crypto.Lab3"
+    mainClassName = "io.fobo66.crypto.Lab3Kt"
 }
 
 allprojects {
