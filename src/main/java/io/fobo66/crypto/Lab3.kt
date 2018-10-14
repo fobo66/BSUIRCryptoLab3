@@ -4,6 +4,7 @@ import javax.xml.bind.DatatypeConverter
 
 fun main(args: Array<String>) {
     val md5 = MD5()
+    val sha1 = SHA1()
     val testStrings = arrayOf(
             "",
             "a",
@@ -16,10 +17,11 @@ fun main(args: Array<String>) {
 
     for (s in testStrings) {
         printResults(s, md5.compute(s.toByteArray()))
+        printResults(s, sha1.compute(s.toByteArray()))
     }
 }
 
 fun printResults(clearText: String, encryptedText: ByteArray) {
-    println("Clear text: \"$clearText\"")
-    println("Encrypted text: " + DatatypeConverter.printHexBinary(encryptedText))
+    println("Message: \"$clearText\"")
+    println("Hashed message: " + DatatypeConverter.printHexBinary(encryptedText))
 }

@@ -1,6 +1,6 @@
 package io.fobo66.crypto
 
-class MD5 {
+class MD5 : Hash {
 
     private val initA = 0x67452301
     private val initB = 0xEFCDAB89L.toInt()
@@ -18,7 +18,7 @@ class MD5 {
         ((1L shl 32) * Math.abs(Math.sin(it + 1.0))).toLong().toInt()
     }
 
-    fun compute(message: ByteArray): ByteArray {
+    override fun compute(message: ByteArray): ByteArray {
         val messageLenBytes = message.size
         val numBlocks = ((messageLenBytes + 8) ushr 6) + 1
         val totalLen = numBlocks shl 6
