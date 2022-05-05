@@ -5,10 +5,9 @@ import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
 import java.io.IOException
+import java.math.BigInteger
 import java.nio.file.Files
 import java.nio.file.Paths
-import javax.xml.bind.DatatypeConverter
-
 
 fun main(args: Array<String>) {
     var message = "Hello World!"
@@ -37,7 +36,7 @@ fun main(args: Array<String>) {
 
 fun resolveHashFunction(cmd: CommandLine): Hash {
     if (cmd.hasOption('a')) {
-        return when (cmd.getOptionValue('a').toUpperCase()) {
+        return when (cmd.getOptionValue('a').uppercase()) {
             "MD5" -> MD5()
             "SHA1", "SHA-1" -> SHA1()
             else -> throw IllegalArgumentException("Wrong algorithm. Must be either SHA1 or MD5")
@@ -49,7 +48,7 @@ fun resolveHashFunction(cmd: CommandLine): Hash {
 
 fun printResults(clearText: String, encryptedText: ByteArray) {
     println("Message: \"$clearText\"")
-    println("Hashed message: " + DatatypeConverter.printHexBinary(encryptedText))
+    println("Hashed message: " + BigInteger(encryptedText).toString(16))
 }
 
 @Throws(IOException::class)

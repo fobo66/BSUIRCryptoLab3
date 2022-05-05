@@ -1,10 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.3.0"
+    kotlin("jvm") version "1.6.21"
     application
 }
 
 application {
-    mainClassName = "io.fobo66.crypto.Lab3Kt"
+    mainClass.set("io.fobo66.crypto.Lab3Kt")
 }
 
 allprojects {
@@ -14,6 +14,5 @@ allprojects {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation("commons-cli:commons-cli:1.5.0")
 }
