@@ -15,5 +15,5 @@ allprojects {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("commons-cli:commons-cli:1.4")
+    implementation("commons-cli:commons-cli:1.5.0")
 }
