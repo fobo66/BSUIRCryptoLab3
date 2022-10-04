@@ -1,9 +1,8 @@
 package io.fobo66.crypto
 
-import org.apache.commons.cli.CommandLine
-import org.apache.commons.cli.DefaultParser
-import org.apache.commons.cli.Options
-import org.apache.commons.cli.ParseException
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
+import kotlinx.cli.default
 import java.io.IOException
 import java.math.BigInteger
 import java.nio.file.Files
@@ -12,43 +11,39 @@ import java.nio.file.Paths
 fun main(args: Array<String>) {
     var message = "Hello World!"
 
-    val options = Options()
-    options.addOption("f", "file", true, "Input file")
-    options.addOption("a", "algorithm", true, "Hashing algorithm, either MD5 or SHA1. Defaults to MD5")
+    val parser = ArgParser("lab3")
+    val inputFile by parser.option(ArgType.String, shortName = "f", fullName = "file", description = "Input file")
+    val algorithm by parser.option(
+        ArgType.Choice<Algorithm>(),
+        shortName = "a",
+        fullName = "algorithm",
+        description = "Hashing algorithm, either MD5 or SHA1. Defaults to MD5"
+    ).default(Algorithm.MD5)
 
-    val parser = DefaultParser()
 
-    try {
-        val cmd = parser.parse(options, args)
+    parser.parse(args)
 
-        if (cmd.hasOption('f')) {
-            val filePath = cmd.getOptionValue("file")
-            System.out.format("Reading cleartext from file %s...%n", filePath)
-            message = loadClearTextFromFile(filePath)
-        }
-        val hash = resolveHashFunction(cmd)
+    if (inputFile != null) {
+        val filePath = inputFile!!
+        println("Reading cleartext from file $filePath...")
+        message = loadClearTextFromFile(filePath)
+    }
+    val hash = resolveHashFunction(algorithm)
 
-        printResults(message, hash.compute(message.toByteArray()))
-    } catch (e: ParseException) {
+    printResults(message, hash.compute(message.toByteArray()), algorithm)
+}
 
+fun resolveHashFunction(algorithm: Algorithm): Hash {
+    return when (algorithm) {
+        Algorithm.MD5 -> MD5()
+        Algorithm.SHA1 -> SHA1()
     }
 }
 
-fun resolveHashFunction(cmd: CommandLine): Hash {
-    if (cmd.hasOption('a')) {
-        return when (cmd.getOptionValue('a').uppercase()) {
-            "MD5" -> MD5()
-            "SHA1", "SHA-1" -> SHA1()
-            else -> throw IllegalArgumentException("Wrong algorithm. Must be either SHA1 or MD5")
-        }
-    }
-
-    return MD5()
-}
-
-fun printResults(clearText: String, encryptedText: ByteArray) {
+fun printResults(clearText: String, encryptedText: ByteArray, algorithm: Algorithm) {
     println("Message: \"$clearText\"")
     println("Hashed message: " + BigInteger(encryptedText).toString(16))
+    println("Used algorithm: $algorithm")
 }
 
 @Throws(IOException::class)
