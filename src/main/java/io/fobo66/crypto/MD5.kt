@@ -1,5 +1,8 @@
 package io.fobo66.crypto
 
+import kotlin.math.abs
+import kotlin.math.sin
+
 class MD5 : Hash {
 
     private val initA = 0x67452301
@@ -15,7 +18,7 @@ class MD5 : Hash {
     )
 
     private val tableT = IntArray(64) {
-        ((1L shl 32) * Math.abs(Math.sin(it + 1.0))).toLong().toInt()
+        ((1L shl 32) * abs(sin(it + 1.0))).toLong().toInt()
     }
 
     override fun compute(message: ByteArray): ByteArray {
