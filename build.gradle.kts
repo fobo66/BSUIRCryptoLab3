@@ -3,14 +3,23 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version libs.versions.kotlin
     application
+    `jvm-test-suite`
 }
 
 application {
     mainClass.set("io.fobo66.crypto.Lab3Kt")
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "11"
+kotlin {
+    jvmToolchain(17)
+}
+
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useKotlinTest(libs.versions.kotlin)
+        }
+    }
 }
 
 dependencies {
