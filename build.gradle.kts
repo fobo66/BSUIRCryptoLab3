@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm") version libs.versions.kotlin
     application
@@ -7,7 +5,7 @@ plugins {
 }
 
 application {
-    mainClass.set("io.fobo66.crypto.Lab3Kt")
+    mainClass.set("dev.fobo66.crypto.Lab3Kt")
 }
 
 kotlin {
