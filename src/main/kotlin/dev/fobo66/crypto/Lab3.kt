@@ -5,8 +5,8 @@ import kotlinx.cli.ArgType
 import kotlinx.cli.default
 import java.io.IOException
 import java.math.BigInteger
-import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.io.path.readText
 
 fun main(args: Array<String>) {
     var message = "Hello World!"
@@ -48,5 +48,5 @@ fun printResults(clearText: String, encryptedText: ByteArray, algorithm: Algorit
 
 @Throws(IOException::class)
 private fun loadClearTextFromFile(filePath: String): String {
-    return String(Files.readAllBytes(Paths.get(filePath)))
+    return Paths.get(filePath).readText()
 }
