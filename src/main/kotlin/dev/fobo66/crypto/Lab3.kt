@@ -42,7 +42,7 @@ fun resolveHashFunction(algorithm: Algorithm): Hash {
 
 fun printResults(clearText: String, encryptedText: ByteArray, algorithm: Algorithm) {
     println("Message: \"$clearText\"")
-    println("Hashed message: " + BigInteger(encryptedText).toString(16))
+    println("Hashed message: " + BigInteger(1, encryptedText).toString(16))
     println("Used algorithm: $algorithm")
 }
 
