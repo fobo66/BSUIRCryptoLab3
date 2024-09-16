@@ -5,7 +5,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class Lab3Test {
-
     @Test
     fun `MD5 hash is correct`() {
         val md5 = MD5()

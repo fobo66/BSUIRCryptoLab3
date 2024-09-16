@@ -1,26 +1,42 @@
+@file:Suppress("MagicNumber") // too many numbers related to the algorithm
+
 package dev.fobo66.crypto
 
 import kotlin.math.abs
 import kotlin.math.sin
 
 class MD5 : Hash {
-
     private val initA = 0x67452301
     private val initB = 0xEFCDAB89L.toInt()
     private val initC = 0x98BADCFEL.toInt()
     private val initD = 0x10325476
 
-    private val shiftAmts = intArrayOf(
-            7, 12, 17, 22,
-            5, 9, 14, 20,
-            4, 11, 16, 23,
-            6, 10, 15, 21
-    )
+    private val shiftAmts =
+        intArrayOf(
+            7,
+            12,
+            17,
+            22,
+            5,
+            9,
+            14,
+            20,
+            4,
+            11,
+            16,
+            23,
+            6,
+            10,
+            15,
+            21,
+        )
 
-    private val tableT = IntArray(64) {
-        ((1L shl 32) * abs(sin(it + 1.0))).toLong().toInt()
-    }
+    private val tableT =
+        IntArray(64) {
+            ((1L shl 32) * abs(sin(it + 1.0))).toLong().toInt()
+        }
 
+    @Suppress("LongMethod") // algorithm is long, needs further refactorings
     override fun compute(message: ByteArray): ByteArray {
         val messageLenBytes = message.size
         val numBlocks = ((messageLenBytes + 8) ushr 6) + 1
@@ -44,8 +60,12 @@ class MD5 : Hash {
             var index = i shl 6
 
             for (j in 0..63) {
-                val temp = if (index < messageLenBytes) message[index] else
-                    paddingBytes[index - messageLenBytes]
+                val temp =
+                    if (index < messageLenBytes) {
+                        message[index]
+                    } else {
+                        paddingBytes[index - messageLenBytes]
+                    }
                 buffer[j ushr 2] = (temp.toInt() shl 24) or (buffer[j ushr 2] ushr 8)
                 index++
             }
@@ -80,8 +100,13 @@ class MD5 : Hash {
                     }
                 }
 
-                val temp = b + Integer.rotateLeft(a + f + buffer[bufferIndex] +
-                        tableT[j], shiftAmts[(div16 shl 2) or (j and 3)])
+                val temp =
+                    b +
+                        Integer.rotateLeft(
+                            a + f + buffer[bufferIndex] +
+                                tableT[j],
+                            shiftAmts[(div16 shl 2) or (j and 3)],
+                        )
                 a = d
                 d = c
                 c = b
@@ -94,11 +119,20 @@ class MD5 : Hash {
             d += originalD
         }
 
+        return prepareFinalHash(a, b, c, d)
+    }
+
+    private fun prepareFinalHash(
+        a: Int,
+        b: Int,
+        c: Int,
+        d: Int,
+    ): ByteArray {
         val md5 = ByteArray(16)
         var count = 0
 
         for (i in 0..3) {
-            var n = if (i == 0) a else (if (i == 1) b else (if (i == 2) c else d))
+            var n = resolveSubstitution(i, a, b, c, d)
 
             for (j in 0..3) {
                 md5[count++] = n.toByte()
@@ -106,5 +140,18 @@ class MD5 : Hash {
             }
         }
         return md5
+    }
+
+    private fun resolveSubstitution(
+        i: Int,
+        a: Int,
+        b: Int,
+        c: Int,
+        d: Int,
+    ) = when (i) {
+        0 -> a
+        1 -> b
+        2 -> c
+        else -> d
     }
 }

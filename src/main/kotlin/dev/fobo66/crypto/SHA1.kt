@@ -44,11 +44,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+@file:Suppress("MagicNumber") // too many numbers related to the algorithm
+
 package dev.fobo66.crypto
 
-
 class SHA1 : Hash {
-
     private var a = 1732584193
     private var b = -271733879
     private var c = -1732584194
@@ -84,18 +84,22 @@ class SHA1 : Hash {
             val olde = e
 
             for (j in 0..79) {
-                w[j] = if (j < 16)
-                    blocks[i + j]
-                else
-                    rotateLeft(w[j - 3] xor w[j - 8] xor w[j - 14] xor w[j - 16], 1)
+                w[j] =
+                    if (j < 16) {
+                        blocks[i + j]
+                    } else {
+                        rotateLeft(w[j - 3] xor w[j - 8] xor w[j - 14] xor w[j - 16], 1)
+                    }
 
-                val t = (rotateLeft(a, 5) + e + w[j] +
+                val t = (
+                    rotateLeft(a, 5) + e + w[j] +
                         when {
                             j < 20 -> 1518500249 + (b and c or (b.inv() and d))
                             j < 40 -> 1859775393 + (b xor c xor d)
                             j < 60 -> -1894007588 + (b and c or (b and d) or (c and d))
                             else -> -899497514 + (b xor c xor d)
-                        })
+                        }
+                )
                 e = d
                 d = c
                 c = rotateLeft(b, 30)
@@ -138,11 +142,16 @@ class SHA1 : Hash {
     /**
      * Bitwise rotate a 32-bit number to the left
      */
-    private fun rotateLeft(num: Int, cnt: Int): Int {
-        return num shl cnt or num.ushr(32 - cnt)
-    }
+    private fun rotateLeft(
+        num: Int,
+        cnt: Int,
+    ): Int = num shl cnt or num.ushr(32 - cnt)
 
-    private fun fill(value: Int, arr: ByteArray, off: Int) {
+    private fun fill(
+        value: Int,
+        arr: ByteArray,
+        off: Int,
+    ) {
         arr[off + 0] = (value shr 24 and 0xff).toByte()
         arr[off + 1] = (value shr 16 and 0xff).toByte()
         arr[off + 2] = (value shr 8 and 0xff).toByte()
