@@ -1,55 +1,53 @@
 package dev.fobo66.crypto
 
-import kotlinx.cli.ArgParser
-import kotlinx.cli.ArgType
-import kotlinx.cli.default
-import java.io.IOException
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.main
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.help
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.transform.theme
+import com.github.ajalt.clikt.parameters.types.choice
+import com.github.ajalt.clikt.parameters.types.path
 import java.math.BigInteger
-import java.nio.file.Paths
 import kotlin.io.path.readText
 
 private const val HEX_RADIX = 16
 
-fun main(args: Array<String>) {
-    var message = "Hello World!"
+class Lab3 : CliktCommand() {
+    val inputFile by option("-f", "--file")
+        .path(mustBeReadable = true, canBeDir = false, mustExist = true)
+        .help { theme.info("Input file") }
 
-    val parser = ArgParser("lab3")
-    val inputFile by parser.option(ArgType.String, shortName = "f", fullName = "file", description = "Input file")
-    val algorithm by parser
-        .option(
-            ArgType.Choice<Algorithm>(),
-            shortName = "a",
-            fullName = "algorithm",
-            description = "Hashing algorithm, either MD5 or SHA1. Defaults to MD5",
-        ).default(Algorithm.MD5)
+    val algorithm by option("-a", "--algorithm")
+        .choice("MD5" to Algorithm.MD5, "SHA1" to Algorithm.SHA1)
+        .help { theme.info("Hashing algorithm, either MD5 or SHA1. Defaults to MD5") }
+        .default(Algorithm.MD5)
 
-    parser.parse(args)
+    override fun run() {
+        var message = "Hello World!"
 
-    if (inputFile != null) {
-        val filePath = inputFile!!
-        println("Reading cleartext from file $filePath...")
-        message = loadClearTextFromFile(filePath)
-    }
-    val hash = resolveHashFunction(algorithm)
+        inputFile?.let {
+            echo("Reading cleartext from file ${it.fileName}...")
+            message = it.readText()
+        }
+        val hash = when (algorithm) {
+            Algorithm.MD5 -> MD5()
+            Algorithm.SHA1 -> SHA1()
+        }
 
-    printResults(message, hash.compute(message.toByteArray()), algorithm)
-}
-
-fun resolveHashFunction(algorithm: Algorithm): Hash =
-    when (algorithm) {
-        Algorithm.MD5 -> MD5()
-        Algorithm.SHA1 -> SHA1()
+        printResults(message, hash.compute(message.toByteArray()), algorithm)
     }
 
-fun printResults(
-    clearText: String,
-    encryptedText: ByteArray,
-    algorithm: Algorithm,
-) {
-    println("Message: \"$clearText\"")
-    println("Hashed message: " + BigInteger(1, encryptedText).toString(HEX_RADIX))
-    println("Used algorithm: $algorithm")
+    private fun printResults(
+        clearText: String,
+        encryptedText: ByteArray,
+        algorithm: Algorithm,
+    ) {
+        echo("Message: \"$clearText\"")
+        echo("Hashed message: ${BigInteger(1, encryptedText).toString(HEX_RADIX)}")
+        echo("Used algorithm: $algorithm")
+    }
+
 }
 
-@Throws(IOException::class)
-private fun loadClearTextFromFile(filePath: String): String = Paths.get(filePath).readText()
+fun main(args: Array<String>) = Lab3().main(args)

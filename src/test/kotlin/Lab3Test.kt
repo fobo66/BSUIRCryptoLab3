@@ -4,6 +4,8 @@ import java.security.MessageDigest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private const val CLEARTEXT = "test"
+
 class Lab3Test {
     @Test
     fun `MD5 hash is correct`() {
@@ -19,9 +21,5 @@ class Lab3Test {
         val hash = sha1.compute(CLEARTEXT.toByteArray())
         val expectedHash = MessageDigest.getInstance("SHA1").digest(CLEARTEXT.toByteArray())
         assertEquals(expectedHash.toString(Charsets.UTF_8), hash.toString(Charsets.UTF_8))
-    }
-
-    companion object {
-        private const val CLEARTEXT = "test"
     }
 }
